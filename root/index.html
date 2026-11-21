@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#141413" />
   <title>SkyPulse 2D</title>
   <style>
     :root {
@@ -14,424 +13,169 @@
       --accent: #f49b52;
       --border: rgba(255, 255, 255, 0.16);
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
     body {
-      min-height: 100vh;
-      background: var(--bg-outer);
-      color: var(--text-main);
-      padding: 0.9rem 0.9rem 5.6rem 0.9rem;
-      display: flex;
-      justify-content: center;
-      transition: background 0.5s ease;
+      min-height: 100vh; background: var(--bg-outer); color: var(--text-main);
+      padding: 0.9rem 0.9rem 5.6rem 0.9rem; display: flex; justify-content: center;
     }
-
-    body.theme-day {
-      background: linear-gradient(180deg, #279be8 0%, #58b8f5 52%, #6f776c 100%);
-    }
-
-    body.theme-night {
-      background: linear-gradient(180deg, #070b17 0%, #101933 55%, #191d26 100%);
-    }
-
-    .app {
-      width: 100%;
-      max-width: 460px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-    }
+    body.theme-day { background: linear-gradient(180deg, #279be8 0%, #58b8f5 52%, #6f776c 100%); }
+    body.theme-night { background: linear-gradient(180deg, #070b17 0%, #101933 55%, #191d26 100%); }
+    .app { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 0.9rem; }
 
     .hero {
-      position: relative;
-      border-radius: 26px;
-      overflow: hidden;
-      padding: 1.15rem;
-      min-height: 338px;
-      border: 1px solid var(--border);
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
+      position: relative; border-radius: 26px; overflow: hidden; padding: 1.15rem; min-height: 338px;
+      border: 1px solid var(--border); box-shadow: 0 14px 32px rgba(0,0,0,0.4);
       background: linear-gradient(180deg, #1693e6 0%, #5cc0ff 72%, #8cd4ff 100%);
-      transition: background 0.6s ease;
     }
-
-    .hero.night {
-      background: linear-gradient(180deg, #040711 0%, #0b152e 65%, #15223f 100%);
-    }
-
-    .sky-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 0;
-    }
+    .hero.night { background: linear-gradient(180deg, #040711 0%, #0b152e 65%, #15223f 100%); }
+    .sky-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
 
     .stars {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      will-change: opacity, transform;
-      transition: opacity 0.5s ease;
+      position: absolute; inset: 0; opacity: 0;
       background-image:
-        radial-gradient(1.5px 1.5px at 14% 18%, #ffffff, transparent),
+        radial-gradient(1.5px 1.5px at 14% 18%, #fff, transparent),
         radial-gradient(1px 1px at 28% 36%, #e2e8f0, transparent),
-        radial-gradient(2px 2px at 46% 14%, #ffffff, transparent),
-        radial-gradient(1.2px 1.2px at 66% 24%, #cbd5e1, transparent),
-        radial-gradient(1.8px 1.8px at 82% 16%, #ffffff, transparent),
-        radial-gradient(1px 1px at 90% 38%, #f8fafc, transparent),
-        radial-gradient(1.5px 1.5px at 36% 52%, #e2e8f0, transparent);
+        radial-gradient(2px 2px at 46% 14%, #fff, transparent),
+        radial-gradient(1.8px 1.8px at 82% 16%, #fff, transparent);
     }
-
-    .hero.night .stars {
-      opacity: 0.9;
-      animation: starTwinkle 3.6s ease-in-out infinite;
-    }
-
-    @keyframes starTwinkle {
-      0%, 100% { opacity: 0.65; transform: translate3d(0, 0, 0); }
-      50% { opacity: 1; transform: translate3d(0, -1px, 0); }
-    }
+    .hero.night .stars { opacity: 0.9; animation: starTwinkle 3.6s ease-in-out infinite; }
+    @keyframes starTwinkle { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
 
     .celestial {
-      position: absolute;
-      top: 56px;
-      right: 24px;
-      width: 62px;
-      height: 62px;
-      border-radius: 50%;
-      z-index: 1;
-      will-change: transform, opacity;
-      transform: translate3d(0, 0, 0);
-      transition: all 0.5s ease;
+      position: absolute; top: 56px; right: 24px; width: 62px; height: 62px;
+      border-radius: 50%; z-index: 1; transform: translate3d(0,0,0);
     }
-
     .celestial.sun {
       background: radial-gradient(circle at 35% 35%, #fff59d 0%, #ffca28 55%, #ff8f00 100%);
-      box-shadow: 0 0 28px rgba(255, 202, 40, 0.88), 0 0 64px rgba(255, 143, 0, 0.48);
+      box-shadow: 0 0 28px rgba(255,202,40,0.88), 0 0 64px rgba(255,143,0,0.48);
       animation: sunPulse 4.5s ease-in-out infinite;
     }
-
-    .celestial.sun::after {
-      content: "";
-      position: absolute;
-      inset: -11px;
-      border-radius: 50%;
-      border: 2px dashed rgba(255, 236, 153, 0.55);
-      animation: sunOrbit 14s linear infinite;
-    }
-
     .celestial.moon {
       background: radial-gradient(circle at 32% 30%, #ffffff 0%, #e2e8f0 68%, #94a3b8 100%);
-      box-shadow: 0 0 26px rgba(226, 232, 240, 0.72), 0 0 54px rgba(148, 163, 184, 0.35);
+      box-shadow: 0 0 26px rgba(226,232,240,0.72), 0 0 54px rgba(148,163,184,0.35);
       animation: moonFloat 5s ease-in-out infinite;
     }
+    @keyframes sunPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    @keyframes moonFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-    .celestial.moon::after { content: none; }
-
-    .hero.cloudy .celestial { opacity: 0.72; filter: blur(0.5px); }
-    .hero.clear .celestial { opacity: 1; filter: none; }
-
-    @keyframes sunPulse {
-      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-      50% { transform: translate3d(0, -3px, 0) scale(1.05); }
-    }
-
-    @keyframes sunOrbit {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes moonFloat {
-      0%, 100% { transform: translate3d(0, 0, 0); }
-      50% { transform: translate3d(0, -4px, 0); }
-    }
-
-    .cloud {
-      position: absolute;
-      border-radius: 999px;
-      will-change: transform;
-      transform: translate3d(0, 0, 0);
-    }
-
-    .cloud::before,
-    .cloud::after {
-      content: "";
-      position: absolute;
-      border-radius: 50%;
-    }
-
-    .cloud.front { z-index: 3; }
-    .cloud.back { z-index: 0; }
-
-    .hero:not(.night) .cloud {
-      background: linear-gradient(180deg, #ffffff 0%, #e8eef7 68%, #c7d4e6 100%);
-      box-shadow: 0 4px 0 rgba(148, 163, 184, 0.35);
-    }
-    .hero:not(.night) .cloud::before { background: #ffffff; }
-    .hero:not(.night) .cloud::after { background: #eef3fa; }
-
-    .hero.night .cloud {
-      background: linear-gradient(180deg, #475569 0%, #334155 72%, #1e293b 100%);
-      box-shadow: 0 4px 0 rgba(15, 23, 42, 0.55);
-    }
-    .hero.night .cloud::before { background: #64748b; }
-    .hero.night .cloud::after { background: #475569; }
-
+    .cloud { position: absolute; border-radius: 999px; transform: translate3d(0,0,0); }
+    .cloud::before, .cloud::after { content: ""; position: absolute; border-radius: 50%; }
+    .hero:not(.night) .cloud, .hero:not(.night) .cloud::before, .hero:not(.night) .cloud::after { background: #fff; }
+    .hero.night .cloud, .hero.night .cloud::before, .hero.night .cloud::after { background: #475569; }
     .c1 { width: 112px; height: 30px; top: 76px; left: -120px; animation: driftRight 24s linear infinite; }
     .c1::before { width: 46px; height: 46px; top: -20px; left: 16px; }
     .c1::after { width: 34px; height: 34px; top: -13px; left: 50px; }
-
     .c2 { width: 136px; height: 34px; top: 122px; left: -150px; animation: driftRight 28s linear -9s infinite; }
     .c2::before { width: 54px; height: 54px; top: -24px; left: 22px; }
     .c2::after { width: 42px; height: 42px; top: -16px; left: 62px; }
-
-    .c3 { width: 92px; height: 24px; top: 174px; left: -110px; opacity: 0.88; animation: driftRight 17s linear -5s infinite; }
-    .c3::before { width: 38px; height: 38px; top: -16px; left: 14px; }
-    .c3::after { width: 28px; height: 28px; top: -10px; left: 42px; }
-
-    .hero.clear .cloud.front { opacity: 0; transition: opacity 0.4s ease; }
-    .hero.cloudy .cloud.front { opacity: 0.96; transition: opacity 0.4s ease; }
-
-    @keyframes driftRight {
-      0% { transform: translate3d(0, 0, 0); }
-      100% { transform: translate3d(620px, 0, 0); }
-    }
+    .hero.clear .cloud { opacity: 0; }
+    .hero.cloudy .cloud { opacity: 0.95; }
+    @keyframes driftRight { 0% { transform: translateX(0); } 100% { transform: translateX(620px); } }
 
     .rain-layer {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      opacity: 0;
-      pointer-events: none;
-      background-image: repeating-linear-gradient(
-        105deg,
-        rgba(226, 232, 240, 0.45) 0px,
-        rgba(226, 232, 240, 0.45) 1.5px,
-        transparent 1.5px,
-        transparent 18px
-      );
+      position: absolute; inset: 0; z-index: 2; opacity: 0; pointer-events: none;
+      background-image: repeating-linear-gradient(105deg, rgba(226,232,240,0.45) 0 1.5px, transparent 1.5px 18px);
       animation: rainFall 0.45s linear infinite;
     }
-
     .hero.rainy .rain-layer { opacity: 0.72; }
+    @keyframes rainFall { 0% { background-position: 0 0; } 100% { background-position: -36px 90px; } }
 
-    @keyframes rainFall {
-      0% { background-position: 0 0; }
-      100% { background-position: -36px 90px; }
+    .daytime-scene, .lighthouse-scene {
+      position: absolute; inset: 0; z-index: 3; opacity: 0; visibility: hidden;
+      pointer-events: none; transition: opacity 0.8s ease, visibility 0.8s ease;
     }
+    .daytime-scene.active, .lighthouse-scene.active { opacity: 1; visibility: visible; }
+    .daytime-scene svg, .lighthouse-scene svg { width: 100%; height: 100%; display: block; }
 
-    .daytime-scene,
-    .lighthouse-scene {
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.9s ease, visibility 0.9s ease;
-    }
-
-    .daytime-scene.active,
-    .lighthouse-scene.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .daytime-scene svg,
-    .lighthouse-scene svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .v-flock-main,
-    .v-flock-second,
-    .boat-1,
-    .boat-2,
-    .boat-3,
-    .boat-4 {
-      will-change: transform;
-    }
-
-    .daytime-scene.active .v-flock-main { animation: vFlockFly1 11s ease-in-out infinite; }
-    @keyframes vFlockFly1 {
-      0% { transform: translate3d(-120px, 12px, 0); }
-      50% { transform: translate3d(20px, -6px, 0); }
-      100% { transform: translate3d(160px, 8px, 0); }
-    }
-
-    .daytime-scene.active .v-flock-second { animation: vFlockFly2 13s ease-in-out -4s infinite; }
-    @keyframes vFlockFly2 {
-      0% { transform: translate3d(-90px, -4px, 0); }
-      50% { transform: translate3d(35px, 8px, 0); }
-      100% { transform: translate3d(170px, -2px, 0); }
-    }
-
+    .daytime-scene.active .v-flock-main { animation: vFly1 11s ease-in-out infinite; }
+    @keyframes vFly1 { 0% { transform: translateX(-110px); } 50% { transform: translateX(15px); } 100% { transform: translateX(140px); } }
+    .daytime-scene.active .v-flock-second { animation: vFly2 13s ease-in-out -4s infinite; }
+    @keyframes vFly2 { 0% { transform: translateX(-80px); } 50% { transform: translateX(25px); } 100% { transform: translateX(150px); } }
     .bird-wing { transform-box: fill-box; transform-origin: center; }
-    .daytime-scene.active .bird-wing { animation: flapWing 0.52s ease-in-out infinite alternate; }
-    @keyframes flapWing {
-      0% { transform: scaleY(1); }
-      100% { transform: scaleY(0.28); }
-    }
+    .daytime-scene.active .bird-wing { animation: wingFlap 0.52s ease-in-out infinite alternate; }
+    @keyframes wingFlap { 0% { transform: scaleY(1); } 100% { transform: scaleY(0.28); } }
 
-    .daytime-scene.active .boat-1 { animation: steamerMove1 9s ease-in-out infinite; }
-    @keyframes steamerMove1 {
-      0%, 100% { transform: translate3d(-16px, 0, 0); }
-      50% { transform: translate3d(22px, -1.5px, 0); }
-    }
-
-    .daytime-scene.active .boat-2 { animation: steamerMove2 11s ease-in-out -3s infinite; }
-    @keyframes steamerMove2 {
-      0%, 100% { transform: translate3d(18px, 0, 0); }
-      50% { transform: translate3d(-20px, 1.5px, 0); }
-    }
-
-    .daytime-scene.active .boat-3 { animation: steamerMove3 8.5s ease-in-out -2s infinite; }
-    @keyframes steamerMove3 {
-      0%, 100% { transform: translate3d(-14px, 1px, 0); }
-      50% { transform: translate3d(24px, -1px, 0); }
-    }
-
-    .daytime-scene.active .boat-4 { animation: steamerMove4 10s ease-in-out -5s infinite; }
-    @keyframes steamerMove4 {
-      0%, 100% { transform: translate3d(16px, -1px, 0); }
-      50% { transform: translate3d(-22px, 1.5px, 0); }
-    }
+    .daytime-scene.active .boat-1 { animation: b1 9s ease-in-out infinite; }
+    @keyframes b1 { 0%, 100% { transform: translateX(-15px); } 50% { transform: translateX(20px); } }
+    .daytime-scene.active .boat-2 { animation: b2 11s ease-in-out -3s infinite; }
+    @keyframes b2 { 0%, 100% { transform: translateX(16px); } 50% { transform: translateX(-18px); } }
+    .daytime-scene.active .boat-3 { animation: b3 8.5s ease-in-out -2s infinite; }
+    @keyframes b3 { 0%, 100% { transform: translateX(-14px); } 50% { transform: translateX(22px); } }
+    .daytime-scene.active .boat-4 { animation: b4 10s ease-in-out -5s infinite; }
+    @keyframes b4 { 0%, 100% { transform: translateX(15px); } 50% { transform: translateX(-20px); } }
 
     .breeze-swirl { stroke-dasharray: 65 135; stroke-dashoffset: 200; }
-    .daytime-scene.active .breeze-swirl { animation: breezeDrift 4.5s linear infinite; }
-    @keyframes breezeDrift {
-      0% { stroke-dashoffset: 200; opacity: 0.1; }
-      35% { opacity: 0.72; }
-      100% { stroke-dashoffset: -120; opacity: 0.05; }
-    }
-
+    .daytime-scene.active .breeze-swirl { animation: breezeGo 4.5s linear infinite; }
+    @keyframes breezeGo { 0% { stroke-dashoffset: 200; } 100% { stroke-dashoffset: -120; } }
     .kaash-sway { transform-box: fill-box; transform-origin: bottom center; }
-    .daytime-scene.active .kaash-sway { animation: kaashWave 3.2s ease-in-out infinite; }
-    @keyframes kaashWave {
-      0%, 100% { transform: rotate(-4deg); }
-      50% { transform: rotate(6deg); }
-    }
+    .daytime-scene.active .kaash-sway { animation: kaashGo 3.2s ease-in-out infinite; }
+    @keyframes kaashGo { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(6deg); } }
 
-    .meteor-group { opacity: 0; transform-origin: center; will-change: transform, opacity; }
-    .lighthouse-scene.active .meteor-group { animation: meteorShoot 4.2s cubic-bezier(0.22, 1, 0.36, 1) 0.8s infinite; }
-    @keyframes meteorShoot {
-      0% { opacity: 0; transform: translate3d(-40px, -25px, 0) scale(0.75); }
-      12% { opacity: 1; }
-      45% { opacity: 1; transform: translate3d(145px, 72px, 0) scale(1); }
-      55%, 100% { opacity: 0; transform: translate3d(180px, 90px, 0) scale(0.6); }
+    .meteor-group { opacity: 0; }
+    .lighthouse-scene.active .meteor-group { animation: meteorGo 4.2s ease-out 0.8s infinite; }
+    @keyframes meteorGo {
+      0% { opacity: 0; transform: translate(-30px,-20px); }
+      15% { opacity: 1; }
+      50% { opacity: 1; transform: translate(135px,65px); }
+      60%, 100% { opacity: 0; transform: translate(160px,80px); }
     }
-
-    .lh-beam { transform-origin: 118px 168px; will-change: transform, opacity; }
-    .lighthouse-scene.active .lh-beam { animation: beamSweep 5s ease-in-out infinite; }
-    @keyframes beamSweep {
-      0%, 100% { transform: rotate(-3deg); opacity: 0.75; }
-      50% { transform: rotate(4deg); opacity: 0.92; }
-    }
-
-    .wind-gust-layer { transform-origin: 245px 215px; will-change: transform, opacity; }
-    .lighthouse-scene.active .wind-gust-layer { animation: windGustSwirl 5.5s ease-in-out infinite; }
-    @keyframes windGustSwirl {
-      0%, 100% { transform: translate3d(18px, 0, 0) scale(0.95); opacity: 0.65; }
-      50% { transform: translate3d(-16px, -4px, 0) scale(1.05); opacity: 0.92; }
-    }
-
-    .sail-boat-group { transform-origin: 318px 268px; will-change: transform; }
-    .lighthouse-scene.active .sail-boat-group { animation: sailBoatRock 2.6s ease-in-out infinite; }
-    @keyframes sailBoatRock {
-      0%, 100% { transform: translate3d(0, 0, 0) rotate(-3.5deg); }
-      50% { transform: translate3d(4px, -5px, 0) rotate(4.5deg); }
-    }
-
-    .wave-back, .wave-front { will-change: transform; }
-    .lighthouse-scene.active .wave-back { animation: waveSurge1 3.4s ease-in-out infinite; }
-    .lighthouse-scene.active .wave-front { animation: waveSurge2 2.5s ease-in-out infinite; }
-    @keyframes waveSurge1 {
-      0%, 100% { transform: translate3d(0, 0, 0); }
-      50% { transform: translate3d(-12px, -4px, 0); }
-    }
-    @keyframes waveSurge2 {
-      0%, 100% { transform: translate3d(0, 0, 0); }
-      50% { transform: translate3d(14px, -5px, 0); }
-    }
-
+    .lh-beam { transform-origin: 118px 168px; }
+    .lighthouse-scene.active .lh-beam { animation: beamGo 5s ease-in-out infinite; }
+    @keyframes beamGo { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(4deg); } }
+    .wind-gust-layer { transform-origin: 245px 215px; }
+    .lighthouse-scene.active .wind-gust-layer { animation: windGo 5.5s ease-in-out infinite; }
+    @keyframes windGo { 0%, 100% { transform: translateX(15px); } 50% { transform: translateX(-14px); } }
+    .sail-boat-group { transform-origin: 318px 268px; }
+    .lighthouse-scene.active .sail-boat-group { animation: boatRock 2.6s ease-in-out infinite; }
+    @keyframes boatRock { 0%, 100% { transform: rotate(-3.5deg); } 50% { transform: rotate(4.5deg); } }
     .scene-bolt, .scene-flash { opacity: 0; }
-    .lighthouse-scene.active .scene-bolt { animation: boltStrike 4.8s infinite; }
-    .lighthouse-scene.active .scene-flash { animation: skyFlash 4.8s infinite; }
-    @keyframes boltStrike {
-      0%, 68%, 100% { opacity: 0; }
-      70% { opacity: 1; }
-      72% { opacity: 0.15; }
-      74% { opacity: 1; }
-      78% { opacity: 0; }
-    }
-    @keyframes skyFlash {
-      0%, 68%, 100% { opacity: 0; }
-      70% { opacity: 0.24; }
-      74% { opacity: 0.32; }
-      78% { opacity: 0; }
-    }
+    .lighthouse-scene.active .scene-bolt { animation: boltGo 4.8s infinite; }
+    .lighthouse-scene.active .scene-flash { animation: flashGo 4.8s infinite; }
+    @keyframes boltGo { 0%, 68%, 100% { opacity: 0; } 70% { opacity: 1; } 72% { opacity: 0.2; } 74% { opacity: 1; } 78% { opacity: 0; } }
+    @keyframes flashGo { 0%, 68%, 100% { opacity: 0; } 70%, 74% { opacity: 0.28; } 78% { opacity: 0; } }
 
-    .hero-content { position: relative; z-index: 5; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); }
+    .hero-content { position: relative; z-index: 5; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
     .topbar { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.7rem; gap: 0.35rem; }
-    .topbar-actions { display: flex; align-items: center; gap: 0.35rem; }
+    .topbar-actions { display: flex; gap: 0.35rem; }
     .scene-pill {
-      background: rgba(15, 23, 42, 0.68); border: 1px solid rgba(244, 155, 82, 0.6); color: #fde68a;
-      padding: 0.22rem 0.55rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(4px);
+      background: rgba(15,23,42,0.68); border: 1px solid rgba(244,155,82,0.6); color: #fde68a;
+      padding: 0.22rem 0.55rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; cursor: pointer;
     }
-    .scene-pill:active { transform: scale(0.95); }
-
     .search-box { display: flex; gap: 0.45rem; margin-bottom: 0.85rem; }
     .search-box input {
-      flex: 1; padding: 0.6rem 0.85rem; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.28);
-      background: rgba(15, 18, 25, 0.48); backdrop-filter: blur(6px); color: #fff; font-size: 0.9rem; outline: none;
+      flex: 1; padding: 0.6rem 0.85rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(15,18,25,0.48); color: #fff; font-size: 0.9rem; outline: none;
     }
-    .search-box input::placeholder { color: rgba(255, 255, 255, 0.72); }
-    .search-box button {
-      padding: 0.6rem 0.95rem; border-radius: 999px; border: none; background: var(--accent);
-      color: #141413; font-weight: 700; font-size: 0.86rem; cursor: pointer;
-    }
-
+    .search-box button { padding: 0.6rem 0.95rem; border-radius: 999px; border: none; background: var(--accent); color: #141413; font-weight: 700; cursor: pointer; }
     .date-line { font-size: 0.86rem; color: var(--text-muted); margin-bottom: 0.15rem; }
     .temp-row { display: flex; align-items: baseline; gap: 0.35rem; }
-    .temp-big { font-size: 3.3rem; font-weight: 700; line-height: 1; letter-spacing: -1.5px; }
+    .temp-big { font-size: 3.3rem; font-weight: 700; line-height: 1; }
     .temp-unit { font-size: 1.3rem; color: var(--text-muted); }
-    .city-title { font-size: 1.38rem; font-weight: 700; margin-top: 0.2rem; margin-bottom: 0.65rem; }
-    .meta-list { display: flex; flex-direction: column; gap: 0.36rem; font-size: 0.88rem; color: #fff; }
+    .city-title { font-size: 1.38rem; font-weight: 700; margin: 0.2rem 0 0.65rem; }
+    .meta-list { display: flex; flex-direction: column; gap: 0.36rem; font-size: 0.88rem; }
     .meta-item { display: flex; align-items: center; gap: 0.5rem; }
 
-    .err-box { display: none; background: rgba(127, 29, 29, 0.94); border: 1px solid #fca5a5; color: #fef2f2; padding: 0.75rem 0.95rem; border-radius: 16px; font-size: 0.85rem; }
+    .err-box { display: none; background: rgba(127,29,29,0.94); border: 1px solid #fca5a5; color: #fef2f2; padding: 0.75rem; border-radius: 16px; font-size: 0.85rem; }
     .err-box.show { display: block; }
-    .section-title { font-size: 1.02rem; font-weight: 600; color: #f8fafc; padding: 0.1rem 0.2rem; }
+    .section-title { font-size: 1.02rem; font-weight: 600; padding: 0.1rem 0.2rem; }
     .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
     .metric-card {
-      background: var(--card-dark); border-radius: 22px; padding: 1rem; border: 1px solid rgba(255, 255, 255, 0.09);
+      background: var(--card-dark); border-radius: 22px; padding: 1rem; border: 1px solid rgba(255,255,255,0.09);
       display: flex; flex-direction: column; justify-content: space-between; min-height: 110px;
-      transition: transform 0.25s ease, border-color 0.25s ease;
     }
-    .metric-card:hover { transform: translate3d(0, -3px, 0); border-color: rgba(244, 155, 82, 0.45); }
-    .metric-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
-    .metric-val { font-size: 1.6rem; font-weight: 700; color: #fff; }
-    .badge-dot {
-      width: 28px; height: 28px; border-radius: 999px; background: var(--accent); color: #141413;
-      display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0;
-    }
-    .metric-label { font-size: 0.88rem; font-weight: 600; color: #f1f5f9; margin-top: 0.5rem; }
-    .metric-sub { font-size: 0.75rem; color: rgba(248, 250, 252, 0.65); margin-top: 0.15rem; }
+    .metric-top { display: flex; justify-content: space-between; align-items: center; }
+    .metric-val { font-size: 1.6rem; font-weight: 700; }
+    .badge-dot { width: 28px; height: 28px; border-radius: 999px; background: var(--accent); color: #141413; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; }
+    .metric-label { font-size: 0.88rem; font-weight: 600; margin-top: 0.5rem; }
+    .metric-sub { font-size: 0.75rem; color: rgba(248,250,252,0.65); margin-top: 0.15rem; }
 
     .bottom-nav {
       position: fixed; bottom: 0.85rem; left: 50%; transform: translateX(-50%);
       width: calc(100% - 1.8rem); max-width: 440px; background: var(--card-dark);
       border-radius: 26px; padding: 0.45rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.35rem;
-      border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45); z-index: 20;
+      border: 1px solid rgba(255,255,255,0.12); z-index: 20;
     }
-    .nav-btn { border: none; background: transparent; color: rgba(248, 250, 252, 0.75); padding: 0.55rem 0.4rem; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+    .nav-btn { border: none; background: transparent; color: rgba(248,250,252,0.75); padding: 0.55rem 0.4rem; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
     .nav-btn.active { background: #e5e7eb; color: #111827; }
   </style>
 </head>
@@ -441,9 +185,8 @@
       <div class="sky-layer">
         <div class="stars"></div>
         <div class="celestial sun" id="celestialBody"></div>
-        <div class="cloud back c1"></div>
-        <div class="cloud front c2"></div>
-        <div class="cloud front c3"></div>
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
         <div class="rain-layer"></div>
 
         <div class="daytime-scene" id="daytimeScene">
@@ -453,39 +196,340 @@
                 <stop offset="0%" stop-color="#60b8f0" /><stop offset="58%" stop-color="#bfe7ff" />
                 <stop offset="88%" stop-color="#fff0bd" /><stop offset="100%" stop-color="#ffe09e" />
               </linearGradient>
-              <radialGradient id="pujaSunGlow" cx="55%" cy="46%" r="55%">
-                <stop offset="0%" stop-color="#fff9db" stop-opacity="0.95" /><stop offset="45%" stop-color="#fde68a" stop-opacity="0.45" />
-                <stop offset="100%" stop-color="#fde68a" stop-opacity="0" />
-              </radialGradient>
               <linearGradient id="gangaWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#9ad4f2" /><stop offset="45%" stop-color="#69b5e0" /><stop offset="100%" stop-color="#3b8ec4" />
+                <stop offset="0%" stop-color="#9ad4f2" /><stop offset="50%" stop-color="#69b5e0" /><stop offset="100%" stop-color="#3b8ec4" />
               </linearGradient>
             </defs>
-
             <rect x="0" y="0" width="420" height="240" fill="url(#pujaSkyGrad)" />
-            <ellipse cx="230" cy="145" rx="200" ry="110" fill="url(#pujaSunGlow)" />
-
-            <g fill="#fffdf7" stroke="#64748b" stroke-width="1.2" opacity="0.9">
-              <path d="M46,68 Q52,55 66,58 Q74,47 88,54 Q100,56 102,68 Z" />
-              <path d="M138,88 Q143,78 154,80 Q162,72 173,78 Q182,80 184,88 Z" />
-              <path d="M292,64 Q299,50 315,54 Q326,42 342,50 Q355,54 358,64 Z" />
+            <g class="v-flock-main" fill="none" stroke="#1e293b" stroke-width="2" stroke-linecap="round">
+              <g transform="translate(120,74)"><path class="bird-wing" d="M-8,0 Q-4,-6 0,0 Q4,-6 8,0" /></g>
+              <g transform="translate(104,83)"><path class="bird-wing" d="M-7,0 Q-3.5,-5 0,0 Q3.5,-5 7,0" /></g>
+              <g transform="translate(136,84)"><path class="bird-wing" d="M-7,0 Q-3.5,-5 0,0 Q3.5,-5 7,0" /></g>
+              <g transform="translate(89,93)"><path class="bird-wing" d="M-6.5,0 Q-3.2,-4.5 0,0 Q3.2,-4.5 6.5,0" /></g>
+              <g transform="translate(151,94)"><path class="bird-wing" d="M-6.5,0 Q-3.2,-4.5 0,0 Q3.2,-4.5 6.5,0" /></g>
             </g>
-
-            <g class="v-flock-main" fill="none" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <g transform="translate(120, 74)"><path class="bird-wing" d="M-8,0 Q-4,-6 0,0 Q4,-6 8,0" /></g>
-              <g transform="translate(104, 83)"><path class="bird-wing" d="M-7,0 Q-3.5,-5 0,0 Q3.5,-5 7,0" /></g>
-              <g transform="translate(136, 84)"><path class="bird-wing" d="M-7,0 Q-3.5,-5 0,0 Q3.5,-5 7,0" /></g>
-              <g transform="translate(89, 93)"><path class="bird-wing" d="M-6.5,0 Q-3.2,-4.5 0,0 Q3.2,-4.5 6.5,0" /></g>
-              <g transform="translate(151, 94)"><path class="bird-wing" d="M-6.5,0 Q-3.2,-4.5 0,0 Q3.2,-4.5 6.5,0" /></g>
+            <g class="v-flock-second" fill="none" stroke="#334155" stroke-width="1.7" stroke-linecap="round">
+              <g transform="translate(265,68)"><path class="bird-wing" d="M-7,0 Q-3.5,-5 0,0 Q3.5,-5 7,0" /></g>
+              <g transform="translate(251,76)"><path class="bird-wing" d="M-6,0 Q-3,-4.5 0,0 Q3,-4.5 6,0" /></g>
+              <g transform="translate(279,77)"><path class="bird-wing" d="M-6,0 Q-3,-4.5 0,0 Q3,-4.5 6,0" /></g>
             </g>
-
-            <g class="v-flock-second" fill="none" stroke="#334155" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-              <g transform="translate(265, 68)"><path class="bird-wing" d="M-7,0 Q-3.5,-5 0,0 Q3.5,-5 7,0" /></g>
-              <g transform="translate(251, 76)"><path class="bird-wing" d="M-6,0 Q-3,-4.5 0,0 Q3,-4.5 6,0" /></g>
-              <g transform="translate(279, 77)"><path class="bird-wing" d="M-6,0 Q-3,-4.5 0,0 Q3,-4.5 6,0" /></g>
-              <g transform="translate(238, 84)"><path class="bird-wing" d="M-5.5,0 Q-2.8,-4 0,0 Q2.8,-4 5.5,0" /></g>
+            <g stroke="#1e293b" fill="none">
+              <line x1="12" y1="214" x2="408" y2="214" stroke-width="3.2" />
+              <line x1="82" y1="158" x2="78" y2="222" stroke-width="3" />
+              <line x1="104" y1="158" x2="108" y2="222" stroke-width="3" />
+              <line x1="322" y1="138" x2="318" y2="222" stroke-width="3.4" />
+              <line x1="348" y1="138" x2="352" y2="222" stroke-width="3.4" />
+              <path d="M93,158 Q214,205 335,138" stroke-width="2.6" />
+              <path d="M115,166 L132,214 L152,176 L172,214 L194,185 L214,214 L236,184 L256,214 L278,172 L298,214 L318,148" stroke="#475569" stroke-width="1.2" />
             </g>
+            <rect x="0" y="232" width="420" height="106" fill="url(#gangaWaterGrad)" />
+            <g fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round">
+              <path class="breeze-swirl" d="M20,132 Q85,122 145,134 Q175,140 165,128" />
+              <path class="breeze-swirl" d="M245,112 Q310,102 370,115" />
+            </g>
+            <g class="boat-1" transform="translate(132,250)">
+              <path d="M-24,7 L24,7 L18,14 L-18,14 Z" fill="#b45309" stroke="#1e293b" stroke-width="1.4" />
+              <rect x="-12" y="-1" width="24" height="8" rx="2" fill="#f8fafc" stroke="#1e293b" stroke-width="1.3" />
+            </g>
+            <g class="boat-2" transform="translate(216,238)">
+              <path d="M-15,5 L15,5 L11,10 L-11,10 Z" fill="#475569" stroke="#1e293b" stroke-width="1.2" />
+              <rect x="-7" y="0" width="14" height="5" rx="1" fill="#fef08a" stroke="#1e293b" stroke-width="1.1" />
+            </g>
+            <g class="boat-3" transform="translate(92,282)">
+              <path d="M-20,6 L22,6 L15,13 L-14,13 Z" fill="#92400e" stroke="#1e293b" stroke-width="1.4" />
+              <rect x="-8" y="0" width="14" height="6" rx="2" fill="#cbd5e1" stroke="#1e293b" stroke-width="1.2" />
+            </g>
+            <g class="boat-4" transform="translate(298,272)">
+              <path d="M-22,6 L22,6 L16,13 L-16,13 Z" fill="#1d4ed8" stroke="#1e293b" stroke-width="1.4" />
+              <rect x="-10" y="-1" width="20" height="7" rx="1.5" fill="#fff" stroke="#1e293b" stroke-width="1.2" />
+            </g>
+            <g class="kaash-sway" transform="translate(24,322)">
+              <path d="M0,0 Q-4,-28 2,-54" fill="none" stroke="#4d7c0f" stroke-width="2" />
+              <ellipse cx="2" cy="-56" rx="4.5" ry="12" fill="#fffdf7" />
+            </g>
+            <g class="kaash-sway" transform="translate(384,322)">
+              <path d="M0,0 Q3,-28 -3,-54" fill="none" stroke="#4d7c0f" stroke-width="2" />
+              <ellipse cx="-3" cy="-56" rx="4.5" ry="12" fill="#fffdf7" />
+            </g>
+          </svg>
+        </div>
 
-            <g stroke="#334155" stroke-width="1.6" fill="none">
-              <line x1="12" y1="214" x2="408" y2="214" stroke="#1e293b" stroke-width="3.2" />
-              <line x1="12" y1="218" 
+        <div class="lighthouse-scene" id="lighthouseScene">
+          <svg viewBox="0 0 420 338" preserveAspectRatio="xMidYMax slice">
+            <defs>
+              <linearGradient id="nightSkyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#0b132b" /><stop offset="55%" stop-color="#1c2541" /><stop offset="100%" stop-color="#3a506b" />
+              </linearGradient>
+              <linearGradient id="beamGrad2" x1="0%" y1="0%" x2="100%" y2="65%">
+                <stop offset="0%" stop-color="#fef08a" stop-opacity="0.72" /><stop offset="100%" stop-color="#fef08a" stop-opacity="0" />
+              </linearGradient>
+              <linearGradient id="stormSeaDeep" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#184e68" /><stop offset="100%" stop-color="#071824" />
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="420" height="240" fill="url(#nightSkyGrad)" />
+            <rect class="scene-flash" x="0" y="0" width="420" height="338" fill="#e0f2fe" />
+            <g class="meteor-group">
+              <line x1="65" y1="68" x2="178" y2="112" stroke="#fde68a" stroke-width="4" stroke-linecap="round" />
+              <circle cx="180" cy="113" r="4.5" fill="#fff" />
+            </g>
+            <g class="scene-bolt">
+              <polyline points="356,126 322,158 352,162 304,202 332,206 292,242" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" />
+            </g>
+            <g class="wind-gust-layer" fill="none" stroke-linecap="round">
+              <path d="M210,185 Q275,172 340,188 Q372,196 355,208" stroke="#cbd5e1" stroke-width="2.2" />
+              <path d="M195,205 Q275,188 355,208 Q388,218 362,232" stroke="#94a3b8" stroke-width="2.6" />
+            </g>
+            <polygon class="lh-beam" points="118,162 385,256 340,295 118,172" fill="url(#beamGrad2)" />
+            <g>
+              <path d="M20,276 Q42,232 75,244 Q98,218 128,236 Q158,224 185,252 L20,285 Z" fill="#273142" stroke="#090d16" stroke-width="2.2" />
+              <polygon points="94,244 102,174 134,174 142,244" fill="#f8fafc" stroke="#0f172a" stroke-width="2" />
+              <polygon points="96,222 98,204 138,204 140,222" fill="#c83e37" />
+              <rect x="103" y="152" width="30" height="17" rx="2" fill="#fef08a" stroke="#0f172a" stroke-width="1.6" />
+              <polygon points="98,152 118,136 138,152" fill="#b91c1c" stroke="#0f172a" stroke-width="1.8" />
+            </g>
+            <path d="M-15,268 Q45,250 105,266 T225,262 T345,266 T440,260 L440,342 L-15,342 Z" fill="url(#stormSeaDeep)" />
+            <g class="sail-boat-group" transform="translate(318,268)">
+              <path d="M-2,-28 L-2,-2 L-24,-2 Z" fill="#fef3c7" stroke="#1e293b" stroke-width="1.5" />
+              <path d="M1,-24 L18,-2 L1,-2 Z" fill="#f8fafc" stroke="#1e293b" stroke-width="1.5" />
+              <circle cx="8" cy="-5" r="3.2" fill="#1e293b" />
+              <path d="M-26,1 L26,1 L18,12 L-18,12 Z" fill="#8b4a2b" stroke="#0f172a" stroke-width="1.8" />
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="hero-content">
+        <div class="topbar">
+          <span id="sourceTag">SkyPulse 2D</span>
+          <div class="topbar-actions">
+            <button type="button" class="scene-pill" id="btnTestDay">☀️ Day 5m</button>
+            <button type="button" class="scene-pill" id="btnTestNight">🌙 Night 5m</button>
+          </div>
+          <span id="updatedTag">Syncing...</span>
+        </div>
+
+        <form class="search-box" id="searchForm">
+          <input id="cityInput" type="text" placeholder="Search city (e.g. Kolkata)" />
+          <button type="submit">Go</button>
+        </form>
+
+        <div class="date-line" id="dateLine">--</div>
+        <div class="temp-row"><span class="temp-big" id="tempVal">--</span><span class="temp-unit">°C</span></div>
+        <div class="city-title" id="cityTitle">Kolkata</div>
+
+        <div class="meta-list">
+          <div class="meta-item"><span id="condIcon">☀️</span><span id="condText">Current weather: --</span></div>
+          <div class="meta-item"><span>💨</span><span id="windHero">Wind: -- km/h</span></div>
+          <div class="meta-item"><span>🌧️</span><span id="rainHero">Rain chance: --%</span></div>
+          <div class="meta-item"><span>💧</span><span id="humHero">Humidity: --%</span></div>
+          <div class="meta-item"><span>🌡️</span><span id="pressHero">Air pressure: -- hPa</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="err-box" id="errBox"></div>
+    <div class="section-title">Atmosphere & Air Quality</div>
+
+    <div class="grid-2">
+      <div class="metric-card">
+        <div class="metric-top"><span class="metric-val" id="aqiVal">--</span><span class="badge-dot">↗</span></div>
+        <div><div class="metric-label">AQI (US)</div><div class="metric-sub" id="aqiStatus">Air quality status</div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-top"><span class="metric-val" id="windVal">--</span><span class="badge-dot">↗</span></div>
+        <div><div class="metric-label">Wind Speed</div><div class="metric-sub">Kilometers per hour (km/h)</div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-top"><span class="metric-val" id="rainVal">--</span><span class="badge-dot">↗</span></div>
+        <div><div class="metric-label">Rain Chance</div><div class="metric-sub">Precipitation probability</div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-top"><span class="metric-val" id="humVal">--</span><span class="badge-dot">↗</span></div>
+        <div><div class="metric-label">Humidity</div><div class="metric-sub">Relative moisture</div></div>
+      </div>
+      <div class="metric-card" style="grid-column: span 2; min-height: 92px;">
+        <div class="metric-top"><span class="metric-val" id="pressVal">--</span><span class="badge-dot">↗</span></div>
+        <div><div class="metric-label">Air Pressure</div><div class="metric-sub">Surface / sea-level pressure (hPa)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" type="button" id="btnKolkata">Kolkata</button>
+    <button class="nav-btn" type="button" id="btnGps">Near Me</button>
+    <button class="nav-btn" type="button" id="btnRefresh">Refresh</button>
+  </nav>
+  <script>
+    let currentCity = "Kolkata";
+    let isCurrentlyNight = false;
+    let sceneHideTimeout = null;
+
+    const LABELS = {
+      0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
+      45: "Foggy", 51: "Light drizzle", 61: "Slight rain", 63: "Moderate rain",
+      65: "Heavy rain", 80: "Rain showers", 95: "Thunderstorm"
+    };
+
+    const showErr = (m) => { const b = document.getElementById("errBox"); b.textContent = m; b.classList.add("show"); };
+    const clearErr = () => { const b = document.getElementById("errBox"); b.textContent = ""; b.classList.remove("show"); };
+    const fmt = (v, s = "") => (v === null || v === undefined || v === "" || Number.isNaN(Number(v)) ? "--" + s : Math.round(Number(v)) + s);
+    const aqiText = (a) => {
+      const n = Number(a);
+      if (a === null || a === undefined || Number.isNaN(n)) return "Unavailable";
+      return n <= 50 ? "Good air" : n <= 100 ? "Moderate air" : n <= 150 ? "Sensitive groups" : "Unhealthy";
+    };
+
+    function playScene(mode, force = false) {
+      if (mode === "night" && !isCurrentlyNight && !force) return;
+      if (mode === "day" && isCurrentlyNight && !force) return;
+      const hero = document.getElementById("heroBox");
+      const cel = document.getElementById("celestialBody");
+      const dayEl = document.getElementById("daytimeScene");
+      const nightEl = document.getElementById("lighthouseScene");
+      dayEl.classList.remove("active");
+      nightEl.classList.remove("active");
+      if (mode === "night") {
+        hero.classList.add("night");
+        cel.classList.remove("sun"); cel.classList.add("moon");
+        nightEl.classList.add("active");
+      } else {
+        hero.classList.remove("night");
+        cel.classList.remove("moon"); cel.classList.add("sun");
+        dayEl.classList.add("active");
+      }
+      if (sceneHideTimeout) clearTimeout(sceneHideTimeout);
+      sceneHideTimeout = setTimeout(() => {
+        dayEl.classList.remove("active");
+        nightEl.classList.remove("active");
+      }, 18000);
+    }
+
+    setInterval(() => playScene(isCurrentlyNight ? "night" : "day", false), 5 * 60 * 1000);
+
+    function applySky(isDay, code) {
+      const hero = document.getElementById("heroBox");
+      const cel = document.getElementById("celestialBody");
+      const icon = document.getElementById("condIcon");
+      const dayFlag = isDay === 1 || isDay === true;
+      isCurrentlyNight = !dayFlag;
+      const c = Number(code);
+      const isClear = c === 0 || c === 1;
+      const isRain = [51, 53, 55, 61, 63, 65, 80, 95].includes(c);
+
+      document.body.classList.toggle("theme-day", dayFlag);
+      document.body.classList.toggle("theme-night", !dayFlag);
+      hero.classList.toggle("night", !dayFlag);
+      hero.classList.toggle("clear", isClear);
+      hero.classList.toggle("cloudy", !isClear);
+      hero.classList.toggle("rainy", isRain);
+      cel.classList.remove("sun", "moon");
+      cel.classList.add(dayFlag ? "sun" : "moon");
+      icon.textContent = isRain ? "🌧️" : (!isClear ? (dayFlag ? "⛅" : "☁️") : (dayFlag ? "☀️" : "🌙"));
+    }
+
+    function renderUI(d) {
+      const now = new Date();
+      document.getElementById("dateLine").textContent = now.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
+      document.getElementById("updatedTag").textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const activeDay = d.isDay !== null && d.isDay !== undefined ? d.isDay : (now.getHours() >= 6 && now.getHours() < 18 ? 1 : 0);
+      applySky(activeDay, d.weatherCode);
+
+      document.getElementById("cityTitle").textContent = d.city || "Kolkata";
+      document.getElementById("tempVal").textContent = fmt(d.temp);
+      document.getElementById("condText").textContent = "Current weather: " + (d.condition || "Live");
+
+      const w = fmt(d.wind, " km/h"), r = fmt(d.rainChance, "%"), h = fmt(d.humidity, "%"), p = fmt(d.pressure, " hPa");
+      document.getElementById("windHero").textContent = "Wind: " + w;
+      document.getElementById("rainHero").textContent = "Rain chance: " + r;
+      document.getElementById("humHero").textContent = "Humidity: " + h;
+      document.getElementById("pressHero").textContent = "Air pressure: " + p;
+
+      document.getElementById("aqiVal").textContent = fmt(d.aqi);
+      document.getElementById("aqiStatus").textContent = aqiText(d.aqi);
+      document.getElementById("windVal").textContent = w;
+      document.getElementById("rainVal").textContent = r;
+      document.getElementById("humVal").textContent = h;
+      document.getElementById("pressVal").textContent = p;
+      document.getElementById("sourceTag").textContent = "Source: " + (d.source || "Live");
+    }
+
+    async function loadByCoords(lat, lon, label) {
+      clearErr();
+      document.getElementById("updatedTag").textContent = "Syncing...";
+      try {
+        const wUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation_probability,weather_code,surface_pressure,wind_speed_10m,is_day&hourly=precipitation_probability&forecast_days=1`;
+        const aUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`;
+        const [wRes, aRes] = await Promise.all([fetch(wUrl), fetch(aUrl).catch(() => null)]);
+        if (wRes.ok) {
+          const wJson = await wRes.json();
+          const aJson = aRes && aRes.ok ? await aRes.json() : null;
+          if (wJson.current && wJson.current.temperature_2m !== undefined) {
+            const cur = wJson.current;
+            renderUI({
+              city: label, temp: cur.temperature_2m,
+              condition: LABELS[cur.weather_code] || "Live",
+              weatherCode: cur.weather_code, isDay: cur.is_day,
+              wind: cur.wind_speed_10m,
+              rainChance: cur.precipitation_probability ?? wJson.hourly?.precipitation_probability?.[0],
+              humidity: cur.relative_humidity_2m, pressure: cur.surface_pressure,
+              aqi: aJson?.current?.us_aqi, source: "Open-Meteo"
+            });
+            return;
+          }
+        }
+      } catch (e) {}
+
+      try {
+        const tRes = await fetch("https://wttr.in/" + encodeURIComponent(label) + "?format=j1");
+        if (tRes.ok) {
+          const tJson = await tRes.json();
+          const c = tJson.current_condition?.[0];
+          if (c) {
+            const ch = Number(c.precipMM) > 0 ? 70 : 15;
+            renderUI({
+              city: label, temp: c.temp_C, condition: c.weatherDesc?.[0]?.value || "Live",
+              weatherCode: ch >= 70 ? 61 : 2, isDay: null, wind: c.windspeedKmph,
+              rainChance: ch, humidity: c.humidity, pressure: c.pressure, aqi: null, source: "wttr.in"
+            });
+            return;
+          }
+        }
+      } catch (e2) {}
+      showErr("Weather load fail. Refresh karke try karein.");
+    }
+
+    async function loadByCity(city) {
+      currentCity = city;
+      try {
+        const gRes = await fetch("https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(city) + "&count=5");
+        if (gRes.ok) {
+          const gJson = await gRes.json();
+          const item = gJson.results?.find((r) => r.country_code === "IN") || gJson.results?.[0];
+          if (item) {
+            const nice = `${item.name}${item.admin1 ? ", " + item.admin1 : ""}${item.country_code ? ", " + item.country_code : ""}`;
+            await loadByCoords(item.latitude, item.longitude, nice);
+            return;
+          }
+        }
+      } catch (e) {}
+      await loadByCoords(22.5726, 88.3639, city);
+    }
+
+    document.getElementById("btnTestDay").onclick = () => playScene("day", true);
+    document.getElementById("btnTestNight").onclick = () => playScene("night", true);
+    document.getElementById("searchForm").onsubmit = (e) => { e.preventDefault(); const q = document.getElementById("cityInput").value.trim(); if (q) loadByCity(q); };
+    document.getElementById("btnKolkata").onclick = () => { document.getElementById("cityInput").value = ""; loadByCity("Kolkata"); };
+    document.getElementById("btnRefresh").onclick = () => loadByCity(currentCity);
+    document.getElementById("btnGps").onclick = () => {
+      if (!navigator.geolocation) return showErr("GPS support nahi hai.");
+      navigator.geolocation.getCurrentPosition(
+        (p) => loadByCoords(p.coords.latitude, p.coords.longitude, "My Location"),
+        () => showErr("Location permission allow nahi hui.")
+      );
+    };
+
+    loadByCity("Kolkata");
+  </script>
+</body>
+</html>
